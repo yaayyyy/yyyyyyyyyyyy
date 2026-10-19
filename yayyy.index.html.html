@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game Invite.exe</title>
+    <!-- 引入 Google 像素字体 -->
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --pink-dark: #FF66FF;
+            --pink-light: #FF99CC;
+            --purple: #CC99FF;
+            --black: #000000;
+            --white: #FFFFFF;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            background-color: var(--pink-light);
+            background-image: linear-gradient(var(--purple) 2px, transparent 2px), linear-gradient(90deg, var(--purple) 2px, transparent 2px);
+            background-size: 30px 30px;
+            font-family: 'VT323', 'Press Start 2P', monospace;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: crosshair; 
+        }
+
+        .retro-window {
+            background: var(--white);
+            border: 3px solid var(--black);
+            box-shadow: 8px 8px 0px var(--black);
+            width: 90%;
+            max-width: 500px;
+            position: relative;
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .retro-title-bar {
+            background: var(--pink-dark);
+            border-bottom: 3px solid var(--black);
+            padding: 6px 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-family: 'Press Start 2P', monospace;
+            font-size: 10px;
+            color: var(--white);
+            text-shadow: 1px 1px 0 var(--black);
+        }
+
+        .window-controls { display: flex; gap: 4px; }
+        .control-btn {
+            background: var(--white);
+            border: 2px solid var(--black);
+            width: 16px;
+            height: 16px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 10px;
+            font-weight: bold;
+            color: var(--black);
+        }
+
+        .window-content {
+            padding: 25px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            min-height: 280px; 
+            justify-content: center;
+            background: repeating-linear-gradient(0deg, transparent, transparent 2px, #f0f0f0 2px, #f0f0f0 4px); 
+        }
+
+        .state-container { width: 100%; display: flex; flex-direction: column; align-items: center; gap: 20px; }
+
+        /* 针对中文调整了字体粗细和大小 */
+        h1 {
+            font-family: 'VT323', 'Microsoft YaHei', sans-serif;
+            font-size: 24px;
+            line-height: 1.5;
+            color: var(--black);
+            margin-bottom: 10px;
+        }
+
+        .from-text { font-size: 20px; color: #666; margin-bottom: 20px; }
+
+        .btn-group { display: flex; gap: 15px; justify-content: center; margin-top: 10px;}
+
+        /* 强制按钮显示样式 */
+        button {
+            font-family: 'Press Start 2P', 'Microsoft YaHei', monospace;
+            font-size: 14px;
+            background: var(--pink-light) !important;
+            border: 3px solid var(--black) !important;
+            box-shadow: 4px 4px 0 var(--black);
+            padding: 10px 25px;
+            cursor: pointer;
+            transition: all 0.1s;
+            color: var(--black) !important;
+            display: inline-block !important; /* 防止按钮被隐藏 */
+        }
+
+        button:hover { background: var(--black) !important; color: var(--pink-light) !important; }
+        button:active { transform: translate(4px, 4px); box-shadow: 0 0 0 var(--black); }
+
+        .cat-image-placeholder {
+            width: 160px;
+            height: 160px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border: 3px solid var(--black);
+            box-shadow: 4px 4px 0 var(--black);
+            background-color: #fff;
+            overflow: hidden; 
+            margin-bottom: 10px;
+        }
+
+        .cat-image-placeholder img { width: 100%; height: 100%; object-fit: cover; }
+
+        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+        .blink-text { animation: blink 1s step-end infinite; color: var(--pink-dark); text-shadow: 1px 1px 0 var(--black); }
+        .sad-text { color: var(--purple); text-shadow: 1px 1px 0 var(--black); }
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body>
+
+    <div class="retro-window">
+        <div class="retro-title-bar">
+            <span>INVITE_TO_PLAY.exe</span>
+            <div class="window-controls">
+                <div class="control-btn">_</div>
+                <div class="control-btn">□</div>
+                <div class="control-btn">X</div>
+            </div>
+        </div>
+
+        <div class="window-content">
+            
+            <!-- 初始状态 -->
+            <div id="state-initial" class="state-container">
+                <h1>文字是可以陪我<br>一起打王者荣耀吗？</h1>
+                <div class="from-text">from: yayyy</div>
+                <div class="btn-group">
+                    <button type="button" id="btn-yes">YES</button>
+                    <button type="button" id="btn-no">NO</button>
+                </div>
+            </div>
+
+            <!-- YES 状态 -->
+            <div id="state-yes" class="state-container hidden">
+                <div class="cat-image-placeholder">
+                    <!-- 请确保同文件夹下有 happy-cat.png 图片，如果没有会显示裂图 -->
+                    <img src="happy-cat.png" alt="开心小猫" onerror="this.style.display='none'; this.parentNode.innerHTML='😸'; this.parentNode.style.fontSize='80px';">
+                </div>
+                <h1 class="blink-text">太好啦！上号！</h1>
+            </div>
+
+            <!-- NO 状态 -->
+            <div id="state-no" class="state-container hidden">
+                <div class="cat-image-placeholder" style="background:#e0e0e0;">
+                    <span style="font-size: 80px;">😿</span>
+                </div>
+                <h1 class="sad-text">你是不是点错了qwq</h1>
+                <div class="btn-group">
+                    <button type="button" id="btn-reset">重新选择</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        // 确保网页加载完毕后再执行代码
+        document.addEventListener("DOMContentLoaded", function() {
+            const stateInitial = document.getElementById('state-initial');
+            const stateYes = document.getElementById('state-yes');
+            const stateNo = document.getElementById('state-no');
+
+            const btnYes = document.getElementById('btn-yes');
+            const btnNo = document.getElementById('btn-no');
+            const btnReset = document.getElementById('btn-reset');
+
+            if (btnYes) {
+                btnYes.addEventListener('click', function() {
+                    stateInitial.classList.add('hidden');
+                    stateYes.classList.remove('hidden');
+                });
+            }
+
+            if (btnNo) {
+                btnNo.addEventListener('click', function() {
+                    stateInitial.classList.add('hidden');
+                    stateNo.classList.remove('hidden');
+                });
+            }
+
+            if (btnReset) {
+                btnReset.addEventListener('click', function() {
+                    stateNo.classList.add('hidden');
+                    stateInitial.classList.remove('hidden');
+                });
+            }
+        });
+    </script>
+</body>
+</html>
